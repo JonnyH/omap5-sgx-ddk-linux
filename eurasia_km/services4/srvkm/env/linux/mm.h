@@ -54,6 +54,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <linux/slab.h>
 #include <linux/mm.h>
 #include <linux/list.h>
+#include <linux/pfn_t.h>
 
 #include <asm/io.h>
 
@@ -601,7 +602,7 @@ IMG_VOID *LinuxMemAreaToCpuVAddr(LinuxMemArea *psLinuxMemArea);
 IMG_CPU_PHYADDR LinuxMemAreaToCpuPAddr(LinuxMemArea *psLinuxMemArea, IMG_UINTPTR_T uByteOffset);
 
 
-#define	 LinuxMemAreaToCpuPFN(psLinuxMemArea, uByteOffset) PHYS_TO_PFN(LinuxMemAreaToCpuPAddr(psLinuxMemArea, uByteOffset).uiAddr)
+#define	 LinuxMemAreaToCpuPFN(psLinuxMemArea, uByteOffset) pfn_to_pfn_t(PHYS_TO_PFN(LinuxMemAreaToCpuPAddr(psLinuxMemArea, uByteOffset).uiAddr))
 
 /*!
  *******************************************************************************

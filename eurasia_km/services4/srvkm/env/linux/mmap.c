@@ -723,7 +723,7 @@ DoMapToUser(LinuxMemArea *psLinuxMemArea,
 	/* First pass, validate the page frame numbers */
 	for(uiPA = uiByteOffset; uiPA < uiByteEnd; uiPA += PAGE_SIZE)
 	{
-		IMG_UINTPTR_T pfn;
+		pfn_t pfn;
 	    IMG_BOOL bMapPage = IMG_TRUE;
 
 		if (psLinuxMemArea->hBMHandle)
@@ -737,7 +737,7 @@ DoMapToUser(LinuxMemArea *psLinuxMemArea,
 		if (bMapPage)
 		{
 			pfn =  LinuxMemAreaToCpuPFN(psLinuxMemArea, uiAdjustedPA);
-			if (!pfn_valid(pfn))
+			if (!pfn_t_valid(pfn))
 			{
 #if !defined(PVR_MAKE_ALL_PFNS_SPECIAL)
 					PVR_DPF((PVR_DBG_ERROR,"%s: Error - PFN invalid: 0x" UINTPTR_FMT, __FUNCTION__, pfn));
@@ -746,7 +746,7 @@ DoMapToUser(LinuxMemArea *psLinuxMemArea,
 			bMixedMap = IMG_TRUE;
 #endif
 			}
-		    else if (0 == page_count(pfn_to_page(pfn)))
+		    else if (0 == page_count(pfn_t_to_page(pfn)))
 		    {
 #if defined(PVR_MAKE_ALL_PFNS_SPECIAL)
 		        bMixedMap = IMG_TRUE;
@@ -767,7 +767,7 @@ DoMapToUser(LinuxMemArea *psLinuxMemArea,
         uiAdjustedPA = uiByteOffset;
 	for(uiPA = uiByteOffset; uiPA < uiByteEnd; uiPA += PAGE_SIZE)
 	{
-	    IMG_UINTPTR_T pfn;
+	    pfn_t pfn;
 	    IMG_INT result;
 	    IMG_BOOL bMapPage = IMG_TRUE;
 
@@ -799,9 +799,9 @@ DoMapToUser(LinuxMemArea *psLinuxMemArea,
 		    {
 				struct page *psPage;
 	
-		        PVR_ASSERT(pfn_valid(pfn));
+		        PVR_ASSERT(pfn_t_valid(pfn));
 	
-		        psPage = pfn_to_page(pfn);
+		        psPage = pfn_t_to_page(pfn);
 	
 		        result = VM_INSERT_PAGE(ps_vma,  ulVMAPos, psPage);
 	                if(result != 0)
@@ -948,15 +948,16 @@ static int MMapVAccess(struct vm_area_struct *ps_vma, unsigned long addr,
 	}
 	else
 	{
-		IMG_UINTPTR_T pfn, uiOffsetInPage;
+		pfn_t pfn;
+		IMG_UINTPTR_T uiOffsetInPage;
 		struct page *page;
 
 		pfn = LinuxMemAreaToCpuPFN(psLinuxMemArea, ulOffset);
 
-		if (!pfn_valid(pfn))
+		if (!pfn_t_valid(pfn))
 			goto exit_unlock;
 
-		page = pfn_to_page(pfn);
+		page = pfn_t_to_page(pfn);
 		uiOffsetInPage = ADDR_TO_PAGE_OFFSET(ulOffset);
 
 		if (uiOffsetInPage + len > PAGE_SIZE)
