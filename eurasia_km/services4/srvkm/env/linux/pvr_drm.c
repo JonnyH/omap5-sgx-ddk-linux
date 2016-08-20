@@ -594,7 +594,7 @@ static struct drm_driver sPVRDrmDriver =
 #endif
 #endif
 
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,18,0))
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,18,0) && LINUX_VERSION_CODE < KERNEL_VERSION(4,8,0))
 #if defined(LDM_PLATFORM)
 	.set_busid = drm_platform_set_busid,
 #else
